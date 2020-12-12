@@ -18,9 +18,6 @@ func ShallowCopy(src interface{}, dst interface{}) {
 	if dstv.Kind() == Ptr {
 		dstv = dstv.Elem()
 	}
-	if dstv.Kind() == Ptr {
-		dstv = dstv.Elem()
-	}
 	if srcv.Kind() == Ptr {
 		srcv = srcv.Elem()
 	}

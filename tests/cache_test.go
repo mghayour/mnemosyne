@@ -20,8 +20,15 @@ func NewConfig() *viper.Viper {
 	return config
 }
 
-type TestType struct {
-	Name string
+type TestTypeUser struct {
+	UserName string
+	Info     TestTypeUserInfo
+	Meta     map[string]string
+}
+type TestTypeUserInfo struct {
+	ClassNumber int32
+	RoomNumber  int64
+	SchoolName  string
 }
 
 func newTestRedis() string {
@@ -46,9 +53,17 @@ func TestGetAndShouldUpdate(t *testing.T) {
 	cacheCtx, cacheCancelFunc := context.WithTimeout(context.Background(), 50*time.Millisecond)
 	defer cacheCancelFunc()
 
-	testCache := TestType{Name: "test me"}
+	testCache := TestTypeUser{
+		UserName: "Soheil joon",
+		Info: TestTypeUserInfo{
+			ClassNumber: 10,
+			RoomNumber:  20,
+			SchoolName:  "mize baghal",
+		},
+		Meta: map[string]string{"foo": "A1", "bar": "A2"},
+	}
 	cacheInstance.Set(cacheCtx, "test_item1", testCache)
-	var myCachedData TestType
+	var myCachedData *TestTypeUser
 
 	shouldUpdate, err := cacheInstance.GetAndShouldUpdate(cacheCtx, "test_item1", &myCachedData)
 
