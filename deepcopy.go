@@ -2,6 +2,7 @@ package mnemosyne
 
 import (
 	. "reflect"
+	"runtime/debug"
 
 	"github.com/mitchellh/mapstructure"
 	"github.com/sirupsen/logrus"
@@ -27,6 +28,7 @@ func ShallowCopy(src interface{}, dst interface{}) {
 
 	if srcv.Kind() != dstv.Kind() {
 		logrus.Errorf("Diffrent object kinds, %v != %v", srcv.Kind(), dstv.Kind())
+		debug.PrintStack()
 		return
 	}
 
