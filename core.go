@@ -152,25 +152,6 @@ func (mn *MnemosyneInstance) getAndSyncLayers(ctx context.Context, key string) (
 	return result, nil
 }
 
-// Get retrieves the value for key
-func (mn *MnemosyneInstance) Get(ctx context.Context, key string, ref interface{}) error {
-	cachableObj, err := mn.get(ctx, key)
-	if err != nil {
-		return err
-	}
-
-	if cachableObj == nil || cachableObj.CachedObject == nil {
-		logrus.Errorf("nil object found in cache %s ! %v", key, cachableObj)
-		return errors.New("nil found")
-	}
-
-	err = json.Unmarshal(*cachableObj.CachedObject, ref)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 // GetAndShouldUpdate retrieves the value for key and also shows whether the soft-TTL of that key has passed or not
 func (mn *MnemosyneInstance) GetAndShouldUpdate(ctx context.Context, key string, ref interface{}) (bool, error) {
 	cachableObj, err := mn.get(ctx, key)
@@ -185,33 +166,30 @@ func (mn *MnemosyneInstance) GetAndShouldUpdate(ctx context.Context, key string,
 		return false, errors.New("nil found")
 	}
 
+	dataAge := time.Since(cachableObj.Time)
+	go mn.monitorDataHotness(dataAge)
+	shouldUpdate := dataAge > mn.softTTL
+	if ref == nil {
+		return shouldUpdate, nil
+	}
+
 	err = json.Unmarshal(*cachableObj.CachedObject, ref)
 	if err != nil {
 		return false, err
 	}
-	dataAge := time.Since(cachableObj.Time)
-	go mn.monitorDataHotness(dataAge)
-	shouldUpdate := dataAge > mn.softTTL
 	return shouldUpdate, nil
+}
+
+// Get retrieves the value for key
+func (mn *MnemosyneInstance) Get(ctx context.Context, key string, ref interface{}) error {
+	_, err := mn.GetAndShouldUpdate(ctx, key, ref)
+	return err
 }
 
 // ShouldUpdate shows whether the soft-TTL of a key has passed or not
 func (mn *MnemosyneInstance) ShouldUpdate(ctx context.Context, key string) (bool, error) {
-	cachableObj, err := mn.get(ctx, key)
-	if err == redis.Nil {
-		return true, err
-	} else if err != nil {
-		return false, err
-	}
-
-	if cachableObj == nil || cachableObj.CachedObject == nil {
-		logrus.Errorf("nil object found in cache %s ! %v", key, cachableObj)
-		return false, errors.New("nil found")
-	}
-
-	shouldUpdate := time.Since(cachableObj.Time) > mn.softTTL
-
-	return shouldUpdate, nil
+	shouldUpdate, err := mn.GetAndShouldUpdate(ctx, key, nil)
+	return shouldUpdate, err
 }
 
 // ShouldUpdateDeep checks all layers for newer result and will sync older cache layers
