@@ -34,8 +34,7 @@ func (mc *fastMemoryCache) Get(ctx context.Context, key string) (*cachable, erro
 	if val == nil || found == false {
 		return nil, nil
 	}
-	res := val.(cachable)
-	return &res, nil
+	return val.(*cachable), nil
 }
 
 func (mc *fastMemoryCache) Set(ctx context.Context, key string, value *cachable) error {
