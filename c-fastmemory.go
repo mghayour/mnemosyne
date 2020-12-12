@@ -2,7 +2,6 @@ package mnemosyne
 
 import (
 	"context"
-	"errors"
 	"math/rand"
 	"time"
 
@@ -31,11 +30,8 @@ func (mc *fastMemoryCache) Get(ctx context.Context, key string) (*cachableRet, e
 	if mc.amnesiaChance > rand.Intn(100) {
 		return nil, newAmnesiaError(mc.amnesiaChance)
 	}
-	res, err := mc.base.Get(key)
-	if err == true {
-		return nil, errors.New("fastmem get failed")
-	}
-	if res == nil {
+	res, found := mc.base.Get(key)
+	if res == nil || found == false {
 		return nil, nil
 	}
 	return res.(*cachableRet), nil
