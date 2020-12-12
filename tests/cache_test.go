@@ -7,7 +7,7 @@ import (
 
 	"bou.ke/monkey"
 	"github.com/alicebob/miniredis"
-	"github.com/cafebazaar/mnemosyne"
+	"github.com/mghayour/mnemosyne"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
