@@ -51,7 +51,7 @@ func (mc *inMemoryCache) Get(ctx context.Context, key string) (*cachable, error)
 	return finalizeCacheResponse(rawBytes, mc.compressionEnabled)
 }
 
-func (mc *inMemoryCache) Set(ctx context.Context, key string, value interface{}) error {
+func (mc *inMemoryCache) Set(ctx context.Context, key string, value *cachable) error {
 	finalData, err := prepareCachePayload(value, mc.compressionEnabled)
 	if err != nil {
 		return err

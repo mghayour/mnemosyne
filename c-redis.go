@@ -95,7 +95,7 @@ func (rc *redisCache) Get(ctx context.Context, key string) (*cachable, error) {
 	return finalizeCacheResponse(rawBytes, rc.compressionEnabled)
 }
 
-func (rc *redisCache) Set(ctx context.Context, key string, value interface{}) error {
+func (rc *redisCache) Set(ctx context.Context, key string, value *cachable) error {
 	finalData, err := prepareCachePayload(value, rc.compressionEnabled)
 	if err != nil {
 		return err

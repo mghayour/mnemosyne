@@ -9,7 +9,7 @@ import (
 
 type ICache interface {
 	Get(context.Context, string) (*cachable, error)
-	Set(context.Context, string, interface{}) error
+	Set(context.Context, string, *cachable) error
 	Delete(context.Context, string) error
 	Clear() error
 	TTL(context.Context, string) time.Duration

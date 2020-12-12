@@ -38,7 +38,7 @@ func (mc *fastMemoryCache) Get(ctx context.Context, key string) (*cachable, erro
 	return &res, nil
 }
 
-func (mc *fastMemoryCache) Set(ctx context.Context, key string, value interface{}) error {
+func (mc *fastMemoryCache) Set(ctx context.Context, key string, value *cachable) error {
 	mc.base.Set(key, value, goCache.DefaultExpiration)
 	return nil
 }

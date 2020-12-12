@@ -42,7 +42,7 @@ func (tc *tinyCache) Get(ctx context.Context, key string) (*cachable, error) {
 	return finalizeCacheResponse(rawBytes, tc.compressionEnabled)
 }
 
-func (tc *tinyCache) Set(ctx context.Context, key string, value interface{}) error {
+func (tc *tinyCache) Set(ctx context.Context, key string, value *cachable) error {
 	finalData, err := prepareCachePayload(value, tc.compressionEnabled)
 	if err != nil {
 		return err

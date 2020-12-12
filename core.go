@@ -143,7 +143,7 @@ func (mn *MnemosyneInstance) getAndSyncLayers(ctx context.Context, key string) (
 	}
 	for i, layer := range mn.cacheLayers {
 		if cacheResults[i] == nil || cacheResults[i].Time.Before(result.Time) {
-			go layer.Set(ctx, key, *result)
+			go layer.Set(ctx, key, result)
 		}
 	}
 
@@ -225,7 +225,7 @@ func (mn *MnemosyneInstance) Set(ctx context.Context, key string, value interfac
 	errorStrings := make([]string, len(mn.cacheLayers))
 	haveErorr := false
 	for i, layer := range mn.cacheLayers {
-		cacheErrors[i] = layer.Set(ctx, key, toCache)
+		cacheErrors[i] = layer.Set(ctx, key, &toCache)
 		if cacheErrors[i] != nil {
 			errorStrings[i] = cacheErrors[i].Error()
 			haveErorr = true
@@ -283,7 +283,7 @@ func (mn *MnemosyneInstance) fillUpperLayers(key string, value *cachable, layer 
 		if value == nil {
 			continue
 		}
-		err := mn.cacheLayers[i].Set(ctx, key, *value)
+		err := mn.cacheLayers[i].Set(ctx, key, value)
 		if err != nil {
 			logrus.Errorf("failed to fill layer %d : %v", i, err)
 		}
