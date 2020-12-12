@@ -126,7 +126,7 @@ func (mn *MnemosyneInstance) getAndSyncLayers(ctx context.Context, key string) (
 	var result *cachableRet
 	var resultLayer int
 	for i, layer := range mn.cacheLayers {
-		cacheResults[i], _ = layer.withContext(ctx).get(key)
+		cacheResults[i], _ = layer.Get(ctx, key)
 		if cacheResults[i] != nil &&
 			(result == nil ||
 				cacheResults[i].Time.After(result.Time)) {
@@ -140,7 +140,7 @@ func (mn *MnemosyneInstance) getAndSyncLayers(ctx context.Context, key string) (
 	}
 	for i, layer := range mn.cacheLayers {
 		if cacheResults[i] == nil || cacheResults[i].Time.Before(result.Time) {
-			go layer.set(key, *result)
+			go layer.Set(ctx, key, *result)
 		}
 	}
 
