@@ -15,6 +15,7 @@ type fastMemoryCache struct {
 }
 
 func NewFastMemoryCache(opts *CacheOpts) *fastMemoryCache {
+	// Notice: max memory dosent supported by go-cache
 	return &fastMemoryCache{
 		baseCache: baseCache{
 			layerName:          opts.layerName,
