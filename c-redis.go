@@ -61,11 +61,13 @@ func NewShardedClusterRedisCache(opts *CacheOpts, watcher ITimer) *redisCache {
 	}
 	rc.baseClients = make([]*clusterClient, len(opts.redisOpts.shards))
 	for i, shard := range opts.redisOpts.shards {
-		rc.baseClients[i].master = makeClient(shard.MasterAddr,
-			opts.redisOpts.db,
-			opts.redisOpts.idleTimeout)
+		rc.baseClients[i] = &clusterClient{
+			master: makeClient(shard.MasterAddr,
+				opts.redisOpts.db,
+				opts.redisOpts.idleTimeout),
+			slaves: make([]*redis.Client, len(shard.SlaveAddrs)),
+		}
 
-		rc.baseClients[i].slaves = make([]*redis.Client, len(shard.SlaveAddrs))
 		for j, slv := range shard.SlaveAddrs {
 			rc.baseClients[i].slaves[j] = makeClient(slv,
 				opts.redisOpts.db,
