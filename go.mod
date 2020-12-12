@@ -14,6 +14,7 @@ require (
 	github.com/go-redis/redis v6.15.6+incompatible
 	github.com/gomodule/redigo v2.0.0+incompatible // indirect
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
+	github.com/mitchellh/mapstructure v1.4.0
 	github.com/onsi/ginkgo v1.10.3 // indirect
 	github.com/onsi/gomega v1.7.1 // indirect
 	github.com/patrickmn/go-cache v2.1.0+incompatible

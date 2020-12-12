@@ -3,6 +3,7 @@ package mnemosyne
 import (
 	. "reflect"
 
+	"github.com/mitchellh/mapstructure"
 	"github.com/sirupsen/logrus"
 )
 
@@ -18,6 +19,10 @@ func ShallowCopy(src interface{}, dst interface{}) {
 	}
 	if srcv.Kind() == Ptr {
 		srcv = srcv.Elem()
+	}
+	if srcv.Kind() == Map && dstv.Kind() == Struct {
+		mapstructure.Decode(src, &dst)
+		return
 	}
 
 	if srcv.Kind() != dstv.Kind() {
