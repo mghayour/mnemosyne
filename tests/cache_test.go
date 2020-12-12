@@ -58,7 +58,7 @@ func TestGetAndShouldUpdate(t *testing.T) {
 
 	assert.Equal(t, false, shouldUpdate)
 
-	wayback := time.Now().Add(time.Hour * 3)
+	wayback := time.Now().Add(time.Hour * 2)
 	patch := monkey.Patch(time.Now, func() time.Time { return wayback })
 	defer patch.Unpatch()
 

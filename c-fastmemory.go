@@ -35,6 +35,9 @@ func (mc *fastMemoryCache) Get(ctx context.Context, key string) (*cachableRet, e
 	if err == true {
 		return nil, errors.New("fastmem get failed")
 	}
+	if res == nil {
+		return nil, nil
+	}
 	return res.(*cachableRet), nil
 }
 

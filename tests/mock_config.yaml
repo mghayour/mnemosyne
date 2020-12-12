@@ -5,9 +5,9 @@ cache:
       - user-memory
       - user-redis
     user-memory:
-      type: memory
+      type: fastmemory
       max-memory: 512
-      ttl: 2h
+      ttl: 4h
       amnesia: 0
       compression: true
     user-redis:
