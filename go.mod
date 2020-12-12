@@ -1,4 +1,4 @@
-module github.com/cafebazaar/mnemosyne
+module github.com/mghayour/mnemosyne
 
 go 1.13
 
