@@ -44,7 +44,4 @@ func ShallowCopy(src interface{}, dst interface{}) {
 			}
 		}
 	}
-
-	logrus.Infof("src: %v", src)
-	logrus.Infof("dst: %v", dst)
 }
