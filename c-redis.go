@@ -77,7 +77,7 @@ func NewShardedClusterRedisCache(opts *CacheOpts, watcher ITimer) *redisCache {
 	return rc
 }
 
-func (rc *redisCache) Get(ctx context.Context, key string) (*cachableRet, error) {
+func (rc *redisCache) Get(ctx context.Context, key string) (*cachable, error) {
 	if rc.amnesiaChance > rand.Intn(100) {
 		return nil, newAmnesiaError(rc.amnesiaChance)
 	}

@@ -26,15 +26,16 @@ func NewFastMemoryCache(opts *CacheOpts) *fastMemoryCache {
 	}
 }
 
-func (mc *fastMemoryCache) Get(ctx context.Context, key string) (*cachableRet, error) {
+func (mc *fastMemoryCache) Get(ctx context.Context, key string) (*cachable, error) {
 	if mc.amnesiaChance > rand.Intn(100) {
 		return nil, newAmnesiaError(mc.amnesiaChance)
 	}
-	res, found := mc.base.Get(key)
-	if res == nil || found == false {
+	val, found := mc.base.Get(key)
+	if val == nil || found == false {
 		return nil, nil
 	}
-	return res.(*cachableRet), nil
+	res := val.(cachable)
+	return &res, nil
 }
 
 func (mc *fastMemoryCache) Set(ctx context.Context, key string, value interface{}) error {

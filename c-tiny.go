@@ -25,7 +25,7 @@ func NewTinyCache(opts *CacheOpts) *tinyCache {
 	}
 }
 
-func (tc *tinyCache) Get(ctx context.Context, key string) (*cachableRet, error) {
+func (tc *tinyCache) Get(ctx context.Context, key string) (*cachable, error) {
 	if tc.amnesiaChance > rand.Intn(100) {
 		return nil, newAmnesiaError(tc.amnesiaChance)
 	}

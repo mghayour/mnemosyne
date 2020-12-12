@@ -40,7 +40,7 @@ func NewInMemoryCache(opts *CacheOpts) *inMemoryCache {
 	}
 }
 
-func (mc *inMemoryCache) Get(ctx context.Context, key string) (*cachableRet, error) {
+func (mc *inMemoryCache) Get(ctx context.Context, key string) (*cachable, error) {
 	if mc.amnesiaChance > rand.Intn(100) {
 		return nil, newAmnesiaError(mc.amnesiaChance)
 	}

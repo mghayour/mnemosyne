@@ -2,7 +2,6 @@ package mnemosyne
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -107,9 +106,9 @@ func newMnemosyneInstance(name string, config *viper.Viper, commTimer ITimer, hi
 	}
 }
 
-func (mn *MnemosyneInstance) get(ctx context.Context, key string) (*cachableRet, error) {
+func (mn *MnemosyneInstance) get(ctx context.Context, key string) (*cachable, error) {
 	cacheErrors := make([]error, len(mn.cacheLayers))
-	var result *cachableRet
+	var result *cachable
 	for i, layer := range mn.cacheLayers {
 		result, cacheErrors[i] = layer.Get(ctx, key)
 		if cacheErrors[i] == nil {
@@ -125,9 +124,9 @@ func (mn *MnemosyneInstance) get(ctx context.Context, key string) (*cachableRet,
 }
 
 // get from all layers and replace older data with new one
-func (mn *MnemosyneInstance) getAndSyncLayers(ctx context.Context, key string) (*cachableRet, error) {
-	cacheResults := make([]*cachableRet, len(mn.cacheLayers))
-	var result *cachableRet
+func (mn *MnemosyneInstance) getAndSyncLayers(ctx context.Context, key string) (*cachable, error) {
+	cacheResults := make([]*cachable, len(mn.cacheLayers))
+	var result *cachable
 	var resultLayer int
 	for i, layer := range mn.cacheLayers {
 		cacheResults[i], _ = layer.Get(ctx, key)
@@ -173,7 +172,8 @@ func (mn *MnemosyneInstance) GetAndShouldUpdate(ctx context.Context, key string,
 		return shouldUpdate, nil
 	}
 
-	err = json.Unmarshal(*cachableObj.CachedObject, ref)
+	// err = json.Unmarshal(*cachableObj.CachedObject, ref)
+	logrus.Infof("cachableObj %v", cachableObj)
 	if err != nil {
 		return false, err
 	}
@@ -276,7 +276,7 @@ func (mn *MnemosyneInstance) Flush(targetLayerName string) error {
 	return fmt.Errorf("Layer Named: %v Not Found", targetLayerName)
 }
 
-func (mn *MnemosyneInstance) fillUpperLayers(key string, value *cachableRet, layer int) {
+func (mn *MnemosyneInstance) fillUpperLayers(key string, value *cachable, layer int) {
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 	for i := layer - 1; i >= 0; i-- {

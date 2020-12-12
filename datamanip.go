@@ -19,14 +19,14 @@ type cachableRet struct {
 	CachedObject *json.RawMessage
 }
 
-func finalizeCacheResponse(rawBytes []byte, compress bool) (*cachableRet, error) {
+func finalizeCacheResponse(rawBytes []byte, compress bool) (*cachable, error) {
 	var finalBytes []byte
 	if compress {
 		finalBytes = decompressZlib(rawBytes)
 	} else {
 		finalBytes = rawBytes
 	}
-	var finalObject cachableRet
+	var finalObject cachable
 	unmarshalErr := json.Unmarshal(finalBytes, &finalObject)
 	if unmarshalErr != nil {
 		return nil, fmt.Errorf("failed to unmarshall cached value : %w", unmarshalErr)
