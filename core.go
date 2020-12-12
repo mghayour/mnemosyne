@@ -174,13 +174,13 @@ func (mn *MnemosyneInstance) GetAndShouldUpdate(ctx context.Context, key string,
 
 	// err = json.Unmarshal(*cachableObj.CachedObject, ref)
 	// logrus.Infof("cachableObj type %v", ref.(type))
-	// logrus.Infof("cachableObj %v", cachableObj)
-	// logrus.Infof("cachableObj %v", cachableObj)
+	logrus.Infof("cachableObj %v", cachableObj)
+	logrus.Infof("dataAge %v", dataAge)
 	// ref = cachableObj.CachedObject
 	// reflect.Copy(reflect.ValueOf(ref), reflect.ValueOf(cachableObj.CachedObject))
 
-	*ref = *cachableObj.CachedObject
-	// r2 := *ref
+	// *ref = *cachableObj.CachedObject
+	ShallowCopy(cachableObj.CachedObject, ref)
 	// v := reflect.ValueOf(cachableObj.CachedObject).Elem()
 	// vp2 := reflect.ValueOf(r2).Elem()
 	// vp2.Set(v)

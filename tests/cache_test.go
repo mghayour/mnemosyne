@@ -53,16 +53,15 @@ func TestGetAndShouldUpdate(t *testing.T) {
 	shouldUpdate, err := cacheInstance.GetAndShouldUpdate(cacheCtx, "test_item1", &myCachedData)
 
 	assert.Equal(t, testCache, myCachedData)
-
 	assert.Equal(t, nil, err)
-
 	assert.Equal(t, false, shouldUpdate)
 
-	wayback := time.Now().Add(time.Hour * 2)
+	wayback := time.Now().Add(time.Hour * 3)
 	patch := monkey.Patch(time.Now, func() time.Time { return wayback })
 	defer patch.Unpatch()
+	patch2 := monkey.Patch(time.Since, func(t time.Time) time.Duration { return time.Hour * 3 })
+	defer patch2.Unpatch()
 
 	shouldUpdate, _ = cacheInstance.GetAndShouldUpdate(cacheCtx, "test_item1", &myCachedData)
-
 	assert.Equal(t, true, shouldUpdate)
 }
