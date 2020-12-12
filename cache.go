@@ -47,6 +47,8 @@ func NewCacheLayer(opts *CacheOpts, watcher ITimer) ICache {
 	} else if layerType == "gaurdian" {
 		// to preserve backward-compatibility
 		return NewShardedClusterRedisCache(opts, watcher)
+	} else if layerType == "fastmemory" {
+		return NewFastMemoryCache(opts)
 	}
 	logrus.Errorf("Malformed: Unknown cache type %s", layerType)
 	return nil
