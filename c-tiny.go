@@ -25,7 +25,7 @@ func NewTinyCache(opts *CacheOpts) *tinyCache {
 	}
 }
 
-func (tc *tinyCache) Get(ctx context.Context, key string) (*cachable, error) {
+func (tc *tinyCache) Get(ctx context.Context, key string, refrence interface{}) (*cachable, error) {
 	if tc.amnesiaChance > rand.Intn(100) {
 		return nil, newAmnesiaError(tc.amnesiaChance)
 	}
@@ -39,7 +39,7 @@ func (tc *tinyCache) Get(ctx context.Context, key string) (*cachable, error) {
 			return nil, errors.New("Failed to load from syncmap")
 		}
 	}
-	return finalizeCacheResponse(rawBytes, tc.compressionEnabled)
+	return finalizeCacheResponse(rawBytes, tc.compressionEnabled, refrence)
 }
 
 func (tc *tinyCache) Set(ctx context.Context, key string, value *cachable) error {

@@ -106,11 +106,11 @@ func newMnemosyneInstance(name string, config *viper.Viper, commTimer ITimer, hi
 	}
 }
 
-func (mn *MnemosyneInstance) get(ctx context.Context, key string) (*cachable, error) {
+func (mn *MnemosyneInstance) get(ctx context.Context, key string, refrence interface{}) (*cachable, error) {
 	cacheErrors := make([]error, len(mn.cacheLayers))
 	var result *cachable
 	for i, layer := range mn.cacheLayers {
-		result, cacheErrors[i] = layer.Get(ctx, key)
+		result, cacheErrors[i] = layer.Get(ctx, key, refrence)
 		if cacheErrors[i] == nil {
 			go func() {
 				mn.fillUpperLayers(key, result, i)
@@ -124,12 +124,12 @@ func (mn *MnemosyneInstance) get(ctx context.Context, key string) (*cachable, er
 }
 
 // get from all layers and replace older data with new one
-func (mn *MnemosyneInstance) getAndSyncLayers(ctx context.Context, key string) (*cachable, error) {
+func (mn *MnemosyneInstance) getAndSyncLayers(ctx context.Context, key string, refrence interface{}) (*cachable, error) {
 	cacheResults := make([]*cachable, len(mn.cacheLayers))
 	var result *cachable
 	var resultLayer int
 	for i, layer := range mn.cacheLayers {
-		cacheResults[i], _ = layer.Get(ctx, key)
+		cacheResults[i], _ = layer.Get(ctx, key, refrence)
 		if cacheResults[i] != nil &&
 			(result == nil ||
 				cacheResults[i].Time.After(result.Time)) {
@@ -152,49 +152,47 @@ func (mn *MnemosyneInstance) getAndSyncLayers(ctx context.Context, key string) (
 }
 
 // GetAndShouldUpdate retrieves the value for key and also shows whether the soft-TTL of that key has passed or not
-func (mn *MnemosyneInstance) GetAndShouldUpdate(ctx context.Context, key string, ref interface{}) (bool, error) {
-	cachableObj, err := mn.get(ctx, key)
+func (mn *MnemosyneInstance) GetAndShouldUpdate(ctx context.Context, key string, refrence interface{}) (interface{}, bool, error) {
+	cachableObj, err := mn.get(ctx, key, refrence)
 	if err == redis.Nil {
-		return true, err
+		return nil, true, err
 	} else if err != nil {
-		return false, err
+		return nil, false, err
 	}
 
 	if cachableObj == nil || cachableObj.CachedObject == nil {
 		logrus.Errorf("nil object found in cache %s ! %v", key, cachableObj)
-		return false, errors.New("nil found")
+		return nil, false, errors.New("nil found")
 	}
 
 	dataAge := time.Since(cachableObj.Time)
 	go mn.monitorDataHotness(dataAge)
 	shouldUpdate := dataAge > mn.softTTL
-	if ref == nil {
-		return shouldUpdate, nil
+	if refrence == nil {
+		return nil, shouldUpdate, nil
 	}
-
-	ShallowCopy(cachableObj.CachedObject, ref)
 
 	if err != nil {
-		return false, err
+		return nil, false, err
 	}
-	return shouldUpdate, nil
+	return cachableObj.CachedObject, shouldUpdate, nil
 }
 
 // Get retrieves the value for key
-func (mn *MnemosyneInstance) Get(ctx context.Context, key string, ref interface{}) error {
-	_, err := mn.GetAndShouldUpdate(ctx, key, ref)
-	return err
+func (mn *MnemosyneInstance) Get(ctx context.Context, key string, refrence interface{}) (interface{}, error) {
+	res, _, err := mn.GetAndShouldUpdate(ctx, key, refrence)
+	return res, err
 }
 
 // ShouldUpdate shows whether the soft-TTL of a key has passed or not
 func (mn *MnemosyneInstance) ShouldUpdate(ctx context.Context, key string) (bool, error) {
-	shouldUpdate, err := mn.GetAndShouldUpdate(ctx, key, nil)
+	_, shouldUpdate, err := mn.GetAndShouldUpdate(ctx, key, nil)
 	return shouldUpdate, err
 }
 
 // ShouldUpdateDeep checks all layers for newer result and will sync older cache layers
-func (mn *MnemosyneInstance) ShouldUpdateDeep(ctx context.Context, key string) (bool, error) {
-	cachableObj, err := mn.getAndSyncLayers(ctx, key)
+func (mn *MnemosyneInstance) ShouldUpdateDeep(ctx context.Context, key string, refrence interface{}) (bool, error) {
+	cachableObj, err := mn.getAndSyncLayers(ctx, key, refrence)
 	if err == redis.Nil {
 		return true, err
 	} else if err != nil {

@@ -40,7 +40,7 @@ func NewInMemoryCache(opts *CacheOpts) *inMemoryCache {
 	}
 }
 
-func (mc *inMemoryCache) Get(ctx context.Context, key string) (*cachable, error) {
+func (mc *inMemoryCache) Get(ctx context.Context, key string, refrence interface{}) (*cachable, error) {
 	if mc.amnesiaChance > rand.Intn(100) {
 		return nil, newAmnesiaError(mc.amnesiaChance)
 	}
@@ -48,7 +48,7 @@ func (mc *inMemoryCache) Get(ctx context.Context, key string) (*cachable, error)
 	if err != nil {
 		return nil, err
 	}
-	return finalizeCacheResponse(rawBytes, mc.compressionEnabled)
+	return finalizeCacheResponse(rawBytes, mc.compressionEnabled, refrence)
 }
 
 func (mc *inMemoryCache) Set(ctx context.Context, key string, value *cachable) error {

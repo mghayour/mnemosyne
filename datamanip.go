@@ -14,19 +14,35 @@ type cachable struct {
 	CachedObject interface{}
 }
 
-func finalizeCacheResponse(rawBytes []byte, compress bool) (*cachable, error) {
+type cachableRet struct {
+	Time         time.Time
+	CachedObject *json.RawMessage
+}
+
+func finalizeCacheResponse(rawBytes []byte, compress bool, refrence interface{}) (*cachable, error) {
 	var finalBytes []byte
 	if compress {
 		finalBytes = decompressZlib(rawBytes)
 	} else {
 		finalBytes = rawBytes
 	}
-	var finalObject cachable
-	unmarshalErr := json.Unmarshal(finalBytes, &finalObject)
+	var unMarshaledWithoutRefrence cachableRet
+	unmarshalErr := json.Unmarshal(finalBytes, &unMarshaledWithoutRefrence)
 	if unmarshalErr != nil {
 		return nil, fmt.Errorf("failed to unmarshall cached value : %w", unmarshalErr)
 	}
-	return &finalObject, nil
+
+	if refrence != nil {
+		unmarshalErr = json.Unmarshal(*unMarshaledWithoutRefrence.CachedObject, refrence)
+		if unmarshalErr != nil {
+			return nil, fmt.Errorf("failed to unmarshall cached refrence value : %w", unmarshalErr)
+		}
+	}
+
+	return &cachable{
+		Time:         unMarshaledWithoutRefrence.Time,
+		CachedObject: refrence,
+	}, nil
 }
 
 func prepareCachePayload(value interface{}, compress bool) (finalData []byte, prepError error) {

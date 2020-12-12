@@ -8,7 +8,7 @@ import (
 )
 
 type ICache interface {
-	Get(context.Context, string) (*cachable, error)
+	Get(context.Context, string, interface{}) (*cachable, error)
 	Set(context.Context, string, *cachable) error
 	Delete(context.Context, string) error
 	Clear() error

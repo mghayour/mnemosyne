@@ -77,7 +77,7 @@ func NewShardedClusterRedisCache(opts *CacheOpts, watcher ITimer) *redisCache {
 	return rc
 }
 
-func (rc *redisCache) Get(ctx context.Context, key string) (*cachable, error) {
+func (rc *redisCache) Get(ctx context.Context, key string, refrence interface{}) (*cachable, error) {
 	if rc.amnesiaChance > rand.Intn(100) {
 		return nil, newAmnesiaError(rc.amnesiaChance)
 	}
@@ -92,7 +92,7 @@ func (rc *redisCache) Get(ctx context.Context, key string) (*cachable, error) {
 		rc.watcher.Done(startMarker, rc.layerName, "get", "error")
 	}
 	rawBytes := []byte(strValue)
-	return finalizeCacheResponse(rawBytes, rc.compressionEnabled)
+	return finalizeCacheResponse(rawBytes, rc.compressionEnabled, refrence)
 }
 
 func (rc *redisCache) Set(ctx context.Context, key string, value *cachable) error {
