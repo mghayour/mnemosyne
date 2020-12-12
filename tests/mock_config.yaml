@@ -3,9 +3,9 @@ cache:
     soft-ttl: 2h
     layers:
       - user-memory
-      - user-redis
+      # - user-redis
     user-memory:
-      type: fastmemory
+      type: memory
       max-memory: 512
       ttl: 4h
       amnesia: 0
