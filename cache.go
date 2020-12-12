@@ -44,6 +44,9 @@ func NewCacheLayer(opts *CacheOpts, watcher ITimer) ICache {
 		return NewTinyCache(opts)
 	} else if layerType == "redis" {
 		return NewShardedClusterRedisCache(opts, watcher)
+	} else if layerType == "gaurdian" {
+		// to preserve backward-compatibility
+		return NewShardedClusterRedisCache(opts, watcher)
 	}
 	logrus.Errorf("Malformed: Unknown cache type %s", layerType)
 	return nil
