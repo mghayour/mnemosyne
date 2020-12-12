@@ -14,11 +14,6 @@ type cachable struct {
 	CachedObject interface{}
 }
 
-type cachableRet struct {
-	Time         time.Time
-	CachedObject *json.RawMessage
-}
-
 func finalizeCacheResponse(rawBytes []byte, compress bool) (*cachable, error) {
 	var finalBytes []byte
 	if compress {
