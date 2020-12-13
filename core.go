@@ -139,7 +139,7 @@ func (mn *MnemosyneInstance) getAndSyncLayers(ctx context.Context, key string, r
 	}
 	if result == nil {
 		go mn.cacheWatcher.Inc(mn.name, "miss")
-		return nil, &ErrCacheMiss{message: "Miss"} // FIXME: better Error combination
+		return nil, &ErrCacheMiss{message: fmt.Sprintf("Miss cache. layer %d", resultLayer)}
 	}
 	for i, layer := range mn.cacheLayers {
 		if cacheResults[i] == nil || cacheResults[i].Time.Before(result.Time) {
