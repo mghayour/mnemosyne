@@ -58,6 +58,9 @@ func (mc *fastMemoryCache) Clear() error {
 }
 
 func (mc *fastMemoryCache) TTL(ctx context.Context, key string) time.Duration {
+	if _, exp, found := mc.base.GetWithExpiration(key); found {
+		return time.Until(exp)
+	}
 	return time.Second * 0
 }
 
