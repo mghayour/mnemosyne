@@ -33,7 +33,7 @@ func (mc *fastMemoryCache) Get(ctx context.Context, key string, refrence interfa
 	}
 	val, found := mc.base.Get(key)
 	if val == nil || found == false {
-		return nil, nil
+		return nil, &ErrCacheMiss{message: "Miss entry at fastmemory layer"}
 	}
 	res := val.(*cachable)
 	return &cachable{
