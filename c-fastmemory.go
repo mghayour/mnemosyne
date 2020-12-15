@@ -22,7 +22,7 @@ func NewFastMemoryCache(opts *CacheOpts) *fastMemoryCache {
 			amnesiaChance:      opts.amnesiaChance,
 			compressionEnabled: opts.compressionEnabled,
 		},
-		base:     goCache.New(opts.cacheTTL, 10*time.Minute),
+		base:     goCache.New(opts.cacheTTL, opts.cleanupInterval),
 		cacheTTL: opts.cacheTTL,
 	}
 }

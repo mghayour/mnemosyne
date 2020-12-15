@@ -2,12 +2,13 @@ cache:
   result:
     soft-ttl: 2h
     layers:
-      # - user-memory
-      - user-redis
+      - user-memory
+      # - user-redis
     user-memory:
       type: fastmemory
       max-memory: 512
       ttl: 4h
+      cleanup-interval: 2m
       amnesia: 0
       compression: true
     user-redis:

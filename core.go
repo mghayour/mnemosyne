@@ -64,10 +64,15 @@ func newMnemosyneInstance(name string, config *viper.Viper, commTimer ITimer, hi
 	cacheLayers := make([]ICache, len(layerNames))
 	for i, layerName := range layerNames {
 		keyPrefix := configKeyPrefix + "." + layerName
+		cleanupInterval := config.GetDuration(keyPrefix + ".cleanup-interval")
+		if cleanupInterval.Nanoseconds() == 0 {
+			cleanupInterval = 10 * time.Minute
+		}
 		layerOptions := &CacheOpts{
 			layerType:          config.GetString(keyPrefix + ".type"),
 			layerName:          layerName,
 			cacheTTL:           config.GetDuration(keyPrefix + ".ttl"),
+			cleanupInterval:    cleanupInterval,
 			amnesiaChance:      config.GetInt(keyPrefix + ".amnesia"),
 			compressionEnabled: config.GetBool(keyPrefix + ".compression"),
 			memOpts: MemoryOpts{

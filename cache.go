@@ -28,6 +28,7 @@ type CacheOpts struct {
 	amnesiaChance      int
 	compressionEnabled bool
 	cacheTTL           time.Duration
+	cleanupInterval    time.Duration
 }
 
 type baseCache struct {
